@@ -36,12 +36,20 @@ if (isset($_GET['remove'])) {
     array_splice($_SESSION['cart'], $index, 1);
 }
 
-// Untuk pesan sekarang, bisa langsung diarahkan ke halaman checkout
-if (isset($_POST['order_now'])) {
-    // Implementasi checkout atau pemesanan langsung
-    // Redirect atau tindakan lainnya
-    header("Location: checkout.php");
-    exit;
+// Mengurangi jumlah item di keranjang
+if (isset($_GET['minus'])) {
+    $index = $_GET['minus'];
+    if ($_SESSION['cart'][$index]['quantity'] > 1) {
+        $_SESSION['cart'][$index]['quantity']--;
+    } else {
+        array_splice($_SESSION['cart'], $index, 1);
+    }
+}
+
+// Menambah jumlah item di keranjang
+if (isset($_GET['plus'])) {
+    $index = $_GET['plus'];
+    $_SESSION['cart'][$index]['quantity']++;
 }
 ?>
 
@@ -52,6 +60,27 @@ if (isset($_POST['order_now'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Keranjang - Kopi Kita</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Fungsi untuk toggle tombol minus dan plus
+        document.addEventListener('DOMContentLoaded', function () {
+            const minusButtons = document.querySelectorAll('.minus-btn');
+            const plusButtons = document.querySelectorAll('.plus-btn');
+
+            minusButtons.forEach(function (btn) {
+                const quantity = parseInt(btn.dataset.quantity, 10);
+                if (quantity <= 1) {
+                    btn.style.display = 'none'; // Sembunyikan tombol minus jika jumlah 1
+                }
+            });
+
+            plusButtons.forEach(function (btn) {
+                const quantity = parseInt(btn.dataset.quantity, 10);
+                if (quantity < 1) {
+                    btn.style.display = 'block'; // Tampilkan tombol plus
+                }
+            });
+        });
+    </script>
 </head>
 <body class="bg-[#f4f1de] text-[#3d405b]">
 
@@ -93,12 +122,31 @@ if (isset($_POST['order_now'])) {
                         <p class="text-gray-600 text-lg">Rp. <?= number_format($item['price'], 0, ',', '.') ?></p>
                         <p class="text-gray-500 text-sm">Jumlah: <?= $item['quantity'] ?></p>
                     </div>
-                    <div>
+                    <div class="flex space-x-4">
+                        <!-- Button Minus -->
+                        <form action="keranjang.php" method="GET" class="flex items-center">
+                            <input type="hidden" name="minus" value="<?= $index ?>">
+                            <button type="submit" class="bg-[#FF6347] text-white w-12 h-12 flex items-center justify-center rounded-full shadow-md hover:bg-[#FF4500] transition-all duration-300 ease-in-out transform hover:scale-110 minus-btn" data-quantity="<?= $item['quantity'] ?>">
+                                <span class="text-2xl">-</span>
+                            </button>
+                        </form>
+
+                        <span class="text-lg font-semibold mx-4"><?= $item['quantity'] ?></span>
+
+                        <!-- Button Plus -->
+                        <form action="keranjang.php" method="GET" class="flex items-center">
+                            <input type="hidden" name="plus" value="<?= $index ?>">
+                            <button type="submit" class="bg-[#32CD32] text-white w-12 h-12 flex items-center justify-center rounded-full shadow-md hover:bg-[#28a745] transition-all duration-300 ease-in-out transform hover:scale-110 plus-btn" data-quantity="<?= $item['quantity'] ?>">
+                                <span class="text-2xl">+</span>
+                            </button>
+                        </form>
+
+                        <!-- Hapus Item -->
                         <form action="keranjang.php" method="GET">
                             <input type="hidden" name="remove" value="<?= $index ?>">
-                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-400 transition">
-                                <i class="fas fa-trash-alt"></i> Hapus
-                                </button>
+                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center">
+                                <i class="fas fa-trash-alt mr-2"></i> Hapus
+                            </button>
                         </form>
                     </div>
                 </div>
