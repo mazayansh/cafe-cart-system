@@ -60,27 +60,6 @@ if (isset($_GET['plus'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Keranjang - Kopi Kita</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        // Fungsi untuk toggle tombol minus dan plus
-        document.addEventListener('DOMContentLoaded', function () {
-            const minusButtons = document.querySelectorAll('.minus-btn');
-            const plusButtons = document.querySelectorAll('.plus-btn');
-
-            minusButtons.forEach(function (btn) {
-                const quantity = parseInt(btn.dataset.quantity, 10);
-                if (quantity <= 1) {
-                    btn.style.display = 'none'; // Sembunyikan tombol minus jika jumlah 1
-                }
-            });
-
-            plusButtons.forEach(function (btn) {
-                const quantity = parseInt(btn.dataset.quantity, 10);
-                if (quantity < 1) {
-                    btn.style.display = 'block'; // Tampilkan tombol plus
-                }
-            });
-        });
-    </script>
 </head>
 <body class="bg-[#f4f1de] text-[#3d405b]">
 
@@ -110,7 +89,17 @@ if (isset($_GET['plus'])) {
     <h1 class="text-4xl font-bold text-center mb-8">Keranjang Belanja</h1>
 
     <?php if (empty($_SESSION['cart'])): ?>
-        <p class="text-center text-xl">Keranjang Anda kosong.</p>
+        <p class="text-center text-xl mb-4">Keranjang Anda kosong.</p>
+        
+        <!-- Tombol untuk kembali berbelanja -->
+        <div class="flex justify-center mt-4">
+            <form action="menu.php" method="GET">
+                <button type="submit" class="bg-red-500 text-white px-8 py-3 rounded-lg hover:bg-red-600 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center">
+                    <i class="fas fa-shopping-cart mr-2"></i> Yuk Mulai Belanja!!
+                </button>
+            </form>
+        </div>
+        
     <?php else: ?>
         <div class="space-y-8">
             <?php foreach ($_SESSION['cart'] as $index => $item): ?>
@@ -122,11 +111,11 @@ if (isset($_GET['plus'])) {
                         <p class="text-gray-600 text-lg">Rp. <?= number_format($item['price'], 0, ',', '.') ?></p>
                         <p class="text-gray-500 text-sm">Jumlah: <?= $item['quantity'] ?></p>
                     </div>
-                    <div class="flex space-x-4">
+                    <div class="flex space-x-4 items-center">
                         <!-- Button Minus -->
                         <form action="keranjang.php" method="GET" class="flex items-center">
                             <input type="hidden" name="minus" value="<?= $index ?>">
-                            <button type="submit" class="bg-[#FF6347] text-white w-12 h-12 flex items-center justify-center rounded-full shadow-md hover:bg-[#FF4500] transition-all duration-300 ease-in-out transform hover:scale-110 minus-btn" data-quantity="<?= $item['quantity'] ?>">
+                            <button type="submit" class="bg-gray-300 text-black w-12 h-12 flex items-center justify-center rounded-full shadow-md hover:bg-[#FF4500] transition-all duration-300 ease-in-out transform hover:scale-110 minus-btn" data-quantity="<?= $item['quantity'] ?>">
                                 <span class="text-2xl">-</span>
                             </button>
                         </form>
@@ -136,7 +125,7 @@ if (isset($_GET['plus'])) {
                         <!-- Button Plus -->
                         <form action="keranjang.php" method="GET" class="flex items-center">
                             <input type="hidden" name="plus" value="<?= $index ?>">
-                            <button type="submit" class="bg-[#32CD32] text-white w-12 h-12 flex items-center justify-center rounded-full shadow-md hover:bg-[#28a745] transition-all duration-300 ease-in-out transform hover:scale-110 plus-btn" data-quantity="<?= $item['quantity'] ?>">
+                            <button type="submit" class="bg-gray-300 text-black w-12 h-12 flex items-center justify-center rounded-full shadow-md hover:bg-[#28a745] transition-all duration-300 ease-in-out transform hover:scale-110 plus-btn" data-quantity="<?= $item['quantity'] ?>">
                                 <span class="text-2xl">+</span>
                             </button>
                         </form>
@@ -144,8 +133,8 @@ if (isset($_GET['plus'])) {
                         <!-- Hapus Item -->
                         <form action="keranjang.php" method="GET">
                             <input type="hidden" name="remove" value="<?= $index ?>">
-                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center">
-                                <i class="fas fa-trash-alt mr-2"></i> Hapus
+                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-300 ease-in-out transform hover:scale-105 justify-center flex items-center">
+                                <i class="fas fa-trash-alt mr-2"></i>Hapus
                             </button>
                         </form>
                     </div>
@@ -193,5 +182,6 @@ if (isset($_GET['plus'])) {
         </div>
     </div>
 </footer>
+
 </body>
 </html>
